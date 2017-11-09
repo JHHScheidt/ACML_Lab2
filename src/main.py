@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Spyder Editor
+Created on Thu Nov  9 15:18:31 2017
 
-This is a temporary script file.
+@author: Joshua & Marciano
 """
 
