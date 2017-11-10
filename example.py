@@ -11,7 +11,7 @@ from keras.utils import np_utils
 from pathlib import Path
 import os
 # load ascii text and covert to lowercase
-DATA = "boyNames"
+DATA = "books"
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 DEFINITIONS_ROOT = os.path.join(PROJECT_ROOT,"data",DATA+".txt")
 if Path(os.path.join(PROJECT_ROOT,"models",DATA+"Model.json")).exists() & Path(os.path.join(PROJECT_ROOT,"models",DATA+"Model.h5")).exists():
