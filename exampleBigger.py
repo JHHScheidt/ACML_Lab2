@@ -14,14 +14,14 @@ import os
 DATA = "boyNames"
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 DEFINITIONS_ROOT = os.path.join(PROJECT_ROOT,"data",DATA+".txt")
-if Path(os.path.join(PROJECT_ROOT,"models",DATA+"Model.json")).exists() & Path(os.path.join(PROJECT_ROOT,"models",DATA+"Model.h5")).exists():
+if Path(os.path.join(PROJECT_ROOT,"models",DATA+"BiggerModel.json")).exists() & Path(os.path.join(PROJECT_ROOT,"models",DATA+"BiggerModel.h5")).exists():
    # load json and create model
-   json_file = open(os.path.join(PROJECT_ROOT,"models",DATA+"Model.json"), 'r')
+   json_file = open(os.path.join(PROJECT_ROOT,"models",DATA+"BiggerModel.json"), 'r')
    loaded_model_json = json_file.read()
    json_file.close()
    model = model_from_json(loaded_model_json)
    # load weights into new model
-   model.load_weights(os.path.join(PROJECT_ROOT,"models",DATA+"Model.h5"))
+   model.load_weights(os.path.join(PROJECT_ROOT,"models",DATA+"BiggerModel.h5"))
    print("Loaded model from disk")
 
 raw_text = open(DEFINITIONS_ROOT).read()
@@ -43,7 +43,7 @@ for i in range(0, n_chars - seq_length, 1):
   dataX.append([char_to_int[char] for char in seq_in])
   dataY.append(char_to_int[seq_out])
 
-if not (Path(os.path.join(PROJECT_ROOT,"models",DATA+"Model.json")).exists() & Path(os.path.join(PROJECT_ROOT,"models",DATA+"Model.h5")).exists()):
+if not (Path(os.path.join(PROJECT_ROOT,"models",DATA+"BiggerModel.json")).exists() & Path(os.path.join(PROJECT_ROOT,"models",DATA+"BiggerModel.h5")).exists()):
    n_patterns = len(dataX)
 
    # reshape X to be [samples, time steps, features]
@@ -54,23 +54,25 @@ if not (Path(os.path.join(PROJECT_ROOT,"models",DATA+"Model.json")).exists() & P
    y = np_utils.to_categorical(dataY)
    # define the LSTM model
    model = Sequential()
-   model.add(LSTM(256, input_shape=(X.shape[1], X.shape[2])))
+   model.add(LSTM(256, input_shape=(X.shape[1], X.shape[2]), return_sequences=True))
+   model.add(Dropout(0.2))
+   model.add(LSTM(256))
    model.add(Dropout(0.2))
    model.add(Dense(y.shape[1], activation='softmax'))
    model.compile(loss='categorical_crossentropy', optimizer='adam')
    # define the checkpoint
-   filepath="weights-improvement-{epoch:02d}-{loss:.4f}.hdf5"
+   filepath="weights-improvement-{epoch:02d}-{loss:.4f}-bigger.hdf5"
    checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
    callbacks_list = [checkpoint]
    # fit the model
-   model.fit(X, y, epochs=20, batch_size=128, callbacks=callbacks_list)
+   model.fit(X, y, epochs=50, batch_size=64, callbacks=callbacks_list)
 
    # save model
    model_json = model.to_json()
-   with open(os.path.join(PROJECT_ROOT,"models",DATA+"Model.json"), "w") as json_file:
+   with open(os.path.join(PROJECT_ROOT,"models",DATA+"BiggerModel.json"), "w") as json_file:
       json_file.write(model_json)
    # serialize weights to HDF5
-   model.save_weights(os.path.join(PROJECT_ROOT,"models",DATA+"Model.h5"))
+   model.save_weights(os.path.join(PROJECT_ROOT,"models",DATA+"BiggerModel.h5"))
    print("Saved model to disk")
 
 # ERROR SOMEWHERE BELOW HERE, SEE:
