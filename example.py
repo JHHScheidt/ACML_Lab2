@@ -1,4 +1,3 @@
-# Small LSTM Network to Generate Text for Alice in Wonderland
 import numpy
 numpy.random.seed(1024)
 from keras.models import Sequential
@@ -10,17 +9,17 @@ from keras.callbacks import ModelCheckpoint
 from keras.utils import np_utils
 from pathlib import Path
 import os
-# load ascii text and covert to lowercase
+# load text file to be used for prediction
 DATA = "books"
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 DEFINITIONS_ROOT = os.path.join(PROJECT_ROOT,"data",DATA+".txt")
 if Path(os.path.join(PROJECT_ROOT,"models",DATA+"Model.json")).exists() & Path(os.path.join(PROJECT_ROOT,"models",DATA+"Model.h5")).exists():
-   # load json and create model
+   # load json/h5 and create model
    json_file = open(os.path.join(PROJECT_ROOT,"models",DATA+"Model.json"), 'r')
    loaded_model_json = json_file.read()
    json_file.close()
    model = model_from_json(loaded_model_json)
-   # load weights into new model
+   # load weights into loaded model
    model.load_weights(os.path.join(PROJECT_ROOT,"models",DATA+"Model.h5"))
    print("Loaded model from disk")
 
@@ -34,7 +33,7 @@ int_to_char = dict((i, c) for i, c in enumerate(chars))
 n_chars = len(raw_text)
 n_vocab = len(chars)
 # prepare the dataset of input to output pairs encoded as integers
-seq_length = 100
+seq_length = 500
 dataX = []
 dataY = []
 for i in range(0, n_chars - seq_length, 1):
@@ -79,9 +78,9 @@ if not (Path(os.path.join(PROJECT_ROOT,"models",DATA+"Model.json")).exists() & P
 # generate characters
 start = numpy.random.randint(0, len(dataX)-1)
 pattern = dataX[start]
-numIter = 10
+numIter = 250
 for i in range(numIter):
-    x = numpy.reshape(pattern, (1, len(pattern), 1))
+    x = numpy.reshape(pattern[len(pattern)-100:len(pattern)], (1, 100, 1))
     x = x / float(n_vocab)
     prediction = model.predict(x, verbose=0)
     index = numpy.argmax(prediction)
