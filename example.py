@@ -79,7 +79,7 @@ if not (Path(os.path.join(PROJECT_ROOT,"models",DATA+"Model.json")).exists() & P
 # generate characters
 start = numpy.random.randint(0, len(dataX)-1)
 pattern = dataX[start]
-numIter = 20
+numIter = 10
 for i in range(numIter):
     x = numpy.reshape(pattern, (1, len(pattern), 1))
     x = x / float(n_vocab)
