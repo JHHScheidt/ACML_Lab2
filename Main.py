@@ -10,7 +10,7 @@ from keras.utils import np_utils
 from pathlib import Path
 import os
 # load text file to be used for prediction
-DATA = "books"
+DATA = "SherlockHolmes"
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 DEFINITIONS_ROOT = os.path.join(PROJECT_ROOT,"data",DATA+".txt")
 if Path(os.path.join(PROJECT_ROOT,"models",DATA+"Model.json")).exists() & Path(os.path.join(PROJECT_ROOT,"models",DATA+"Model.h5")).exists():
@@ -63,6 +63,7 @@ if not (Path(os.path.join(PROJECT_ROOT,"models",DATA+"Model.json")).exists() & P
    callbacks_list = [checkpoint]
    # fit the model
    model.fit(X, y, epochs=20, batch_size=128, callbacks=callbacks_list)
+   # model.fit(X, y, epochs=50, batch_size=64, callbacks=callbacks_list)
 
    # save model
    model_json = model.to_json()
@@ -78,7 +79,7 @@ if not (Path(os.path.join(PROJECT_ROOT,"models",DATA+"Model.json")).exists() & P
 # generate characters
 start = numpy.random.randint(0, len(dataX)-1)
 pattern = dataX[start]
-numIter = 250
+numIter = 200
 for i in range(numIter):
     x = numpy.reshape(pattern[len(pattern)-100:len(pattern)], (1, 100, 1))
     x = x / float(n_vocab)
